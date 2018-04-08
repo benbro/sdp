@@ -501,12 +501,24 @@ describe('getIceParameters', () => {
   it('parses the password', () => {
     expect(ice.password).to.equal('pdfQZAiFbcsFmUKWw55g4TD5');
   });
+
+  describe('determines endOfCandidates', () => {
+    it('to be false if end-of-candidates is not present', () => {
+      expect(ice.endOfCandidates).to.equal(false);
+    });
+
+    it('to be true if end-of-candidates is present', () => {
+      expect(SDPUtils.getIceParameters(sections[1] + 'a=end-of-candidates\r\n', '').endOfCandidates)
+        .to.equal(true);
+    });
+  });
 });
 
 describe('writeIceParameters', () => {
   const serialized= SDPUtils.writeIceParameters({
       usernameFragment: 'foo',
-      password: 'bar'
+      password: 'bar',
+      endOfCandidates: true
   });
 
   it('serializes the usernameFragment', () => {
@@ -515,6 +527,10 @@ describe('writeIceParameters', () => {
 
   it('serializes the password', () => {
      expect(serialized).to.contain('a=ice-pwd:bar');
+  });
+
+  it('serializes end-of-candidates', () => {
+    expect(serialized).to.contain('a=end-of-candidates');
   });
 });
 
